@@ -768,7 +768,7 @@
                         "type": "string"
                     },
                     "Lastname": {
-                        "description": "The lastname of the guest",
+                        "description": "The last name of the guest",
                         "type": "string"
                     },
                     "Phone": {
