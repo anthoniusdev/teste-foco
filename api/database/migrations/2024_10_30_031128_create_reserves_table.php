@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('guestCode');
             $table->date('checkIn');
             $table->date('checkOut');
-            $table->float('Total', 10, 2);
-            $table->boolean('isPayed')->default(false); //
+            $table->float('Total', 10, 2)->default(0.0);
+            $table->boolean('isPayed')->default(false);
             $table->timestamps();
 
             /**

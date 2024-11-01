@@ -9,11 +9,12 @@ class Reserve extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'checkIn',
-        'checkOut',
+        'CheckIn',
+        'CheckOut',
         'hotelCode',
         'roomCode',
         'guestCode',
+        'isPayed',
         'Total'
     ];
 }
