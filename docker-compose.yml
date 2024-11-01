@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: testefoco-db-1
+    environment:
+      MYSQL_DATABASE: testefoco
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: testefoco
+      MYSQL_PASSWORD: testefoco
+    ports:
+      - "3326:3306"
+    networks:
+      - laravel-network
+  
+  laravel-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/var/www/html
+      - ./xml:/var/www/xml
+    depends_on:
+      - db
+    networks:
+      - laravel-network
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+networks:
+  laravel-network:
+    driver: bridge
