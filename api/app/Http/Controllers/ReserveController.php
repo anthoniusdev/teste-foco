@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Coupon;
 use App\Models\Daily;
 use App\Models\Guest;
 use App\Models\Payment;
@@ -101,18 +102,12 @@ class ReserveController extends Controller
      *                 description="Error message"
      *             ),
      *             @OA\Property(
-     *                 property="errors",
-     *                 type="object",
-     *                 description="Validation errors",
-     *                 @OA\Property(
-     *                     property="field",
-     *                     type="array",
-     *                     description="Error messages",
-     *                     @OA\Items(type="string")
-     *                 )
-     *             )
+     *                 property="status",
+     *                 type="string",
+     *                 description="Validation errors"
+     *              )   
      *         )
-     *     )
+     *     ),
      * )
      */
     public function store(Request $request)
@@ -139,23 +134,59 @@ class ReserveController extends Controller
         } else {
             $guest = Guest::where('Phone', $request['guestPhone'])->first();
         }
-
         $checkIn = Carbon::parse($request->CheckIn);
         $checkOut = Carbon::parse($request->CheckOut);
         $days = $checkIn->diffInDays($checkOut);
+        if ($days < 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'The check-out date must be greater than the check-in date'
+            ], 422);
+        }
+
         $valueTotal = $request->dailyValue * $days;
 
         $request->merge([
             'guestCode' => $guest->id,
             'Total' => $valueTotal
-        ]);
+        ]);        
+        
         if ($request->has('paymentMethod')) {
             $request->merge(['isPayed' => true]);
         } else {
             $request->merge(['isPayed' => false]);
         }
+
         $reserve = Reserve::create($request->except(['dailyValue', 'guestName', 'guestLastName', 'guestPhone']));
 
+        /**
+         * Check if the guest has already used the first reserve coupon
+         */
+        if (!$guest->isUsedFirstReserveCoupon) {
+            $coupon = Coupon::where('Code', 'F1RSTR10')->first();
+            $discount = 0;
+            if(($coupon->Discount / 100) * $valueTotal > $coupon->Limit) {
+                $discount = $coupon->Limit;
+            } else {
+                $discount = ($coupon->Discount / 100) * $valueTotal;
+            }
+            $valueTotal = $valueTotal - $discount;
+            $guest->isUsedFirstReserveCoupon = true;
+            $guest->save();
+            $coupon->Used++;
+            $coupon->save();
+            DB::table('coupons_guests_reserves')->insert([
+                'couponCode' => $coupon->id,
+                'guestCode' => $guest->id,
+                'reserveCode' => $reserve->id,
+                'ValueWithoutDiscount' => $valueTotal + $discount,
+                'Discount' => $discount,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            $reserve->Total = $valueTotal;
+            $reserve->save();
+        }
 
         for ($i = 0; $i < $days; $i++) {
             $daily = new Daily();

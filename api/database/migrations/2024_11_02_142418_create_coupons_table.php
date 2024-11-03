@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('guests', function (Blueprint $table) {
+        Schema::create('coupons', function (Blueprint $table) {
             $table->id();
-            $table->string('Name');
-            $table->string('LastName');
-            $table->string('Phone'); // Used type string for phone number because it can contain characters like +, -, etc. And the number 0 can be at the beginning.
-            $table->boolean('isUsedFirstReserveCoupon')->default(false);
+            $table->string('Code', 10)->unique();
+            $table->decimal('Discount', 5, 2);
+            $table->date('Validity');
+            $table->boolean('Active')->default(true);
+            $table->integer('Limit')->default(1);
+            $table->integer('Used')->default(0);
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('guests');
+        Schema::dropIfExists('coupons');
     }
 };
