@@ -29,6 +29,11 @@ use Illuminate\Database\Eloquent\Model;
  *         property="Phone",
  *         type="string",
  *         description="The phone of the guest"
+ *     ),
+ *     @OA\Property(
+ *         property="isUsedCouponFirstReserve",
+ *         type="boolean",
+ *         description="If used the first reserve coupon"
  *     )
  * )
  */
@@ -39,6 +44,7 @@ class Guest extends Model
     protected $fillable = [
         'Name',
         'Lastname',
-        'Phone'
+        'Phone',
+        'isUsedFirstReserveCoupon'
     ];
 }
