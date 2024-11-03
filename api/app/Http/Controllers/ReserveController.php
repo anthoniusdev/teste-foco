@@ -7,20 +7,13 @@ use App\Models\Daily;
 use App\Models\Guest;
 use App\Models\Payment;
 use App\Models\Reserve;
+use App\Models\Room;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReserveController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -97,15 +90,17 @@ class ReserveController extends Controller
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(
-     *                 property="message",
-     *                 type="string",
-     *                 description="Error message"
-     *             ),
-     *             @OA\Property(
      *                 property="status",
      *                 type="string",
-     *                 description="Validation errors"
-     *              )   
+     *                 description="Status message",
+     *                 example="error"
+     *             ),
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 description="Error message",
+     *                 example="Room not available for the selected date or The check-out date must be greater than the check-in date"
+     *             )
      *         )
      *     ),
      * )
@@ -125,6 +120,14 @@ class ReserveController extends Controller
             'paymentValue' => 'numeric'
         ]);
 
+        $room = Room::findOrFail($request->roomCode);
+        if (!$room->isAvailable(Carbon::parse($request->CheckIn)) || !$room->isAvailable(Carbon::parse($request->CheckOut))) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not available for the selected date'
+            ], 422);
+        }
+        
         $guest = new Guest();
         if (!DB::table('guests')->where('Phone', $request['guestPhone'])->exists()) {
             $guest->Name = $request['guestName'];
@@ -149,8 +152,8 @@ class ReserveController extends Controller
         $request->merge([
             'guestCode' => $guest->id,
             'Total' => $valueTotal
-        ]);        
-        
+        ]);
+
         if ($request->has('paymentMethod')) {
             $request->merge(['isPayed' => true]);
         } else {
@@ -165,7 +168,7 @@ class ReserveController extends Controller
         if (!$guest->isUsedFirstReserveCoupon) {
             $coupon = Coupon::where('Code', 'F1RSTR10')->first();
             $discount = 0;
-            if(($coupon->Discount / 100) * $valueTotal > $coupon->Limit) {
+            if (($coupon->Discount / 100) * $valueTotal > $coupon->Limit) {
                 $discount = $coupon->Limit;
             } else {
                 $discount = ($coupon->Discount / 100) * $valueTotal;
@@ -208,29 +211,5 @@ class ReserveController extends Controller
             'message' => 'Reserve created successfully',
             'data' => $reserve
         ], 201);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Reserve $reserve)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Reserve $reserve)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Reserve $reserve)
-    {
-        //
     }
 }
