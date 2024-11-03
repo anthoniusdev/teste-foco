@@ -175,13 +175,15 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "status": {
+                                            "description": "Status message",
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "description": "Error message",
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "description": "Validation errors",
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Room not available for the selected date or The check-out date must be greater than the check-in date"
                                         }
                                     },
                                     "type": "object"

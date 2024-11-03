@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Reserve;
+use Carbon\Carbon;
 
 /**
  * @OA\Schema(
@@ -35,4 +37,13 @@ class Room extends Model
         'Name',
         'hotelCode'
     ];
+    
+    /**
+     * Check if the room is available on a specific date
+     */
+    public function isAvailable(Carbon $date): bool
+    {
+        $reservesExists = Reserve::where('roomCode', $this->id)->where('CheckIn', '<=', $date)->where('CheckOut', '>=', $date)->exists();
+        return !$reservesExists;
+    }
 }
