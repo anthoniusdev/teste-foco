@@ -13,7 +13,7 @@ services:
       - "3326:3306"
     networks:
       - laravel-network
-  
+
   laravel-app:
     build: 
       context: .

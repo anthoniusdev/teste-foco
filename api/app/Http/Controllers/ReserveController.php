@@ -28,11 +28,10 @@ class ReserveController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"CheckIn", "CheckOut", "hotelCode", "roomCode", "dailyValue", "guestName", "guestLastName", "guestPhone"},
+     *             required={"CheckIn", "CheckOut", "roomCode", "dailyValue", "guestName", "guestLastName", "guestPhone"},
      *             type="object",
      *             @OA\Property(property="CheckIn", type="string", format="date", description="Check-in date", example="2021-11-03"),
      *             @OA\Property(property="CheckOut", type="string", format="date", description="Check-out date", example="2021-11-05"),
-     *             @OA\Property(property="hotelCode", type="integer", description="Hotel code", example=1),
      *             @OA\Property(property="roomCode", type="integer", description="Room code", example=1),
      *             @OA\Property(property="dailyValue", type="number", format="float", description="Daily value of the room", example=100.00),
      *             @OA\Property(property="guestName", type="string", description="Guest name", example="Anthonius"),
@@ -64,7 +63,6 @@ class ReserveController extends Controller
      *                 @OA\Property(property="id", type="integer", description="Reservation ID"),
      *                 @OA\Property(property="CheckIn", type="string", format="date", description="Check-in date"),
      *                 @OA\Property(property="CheckOut", type="string", format="date", description="Check-out date"),
-     *                 @OA\Property(property="hotelCode", type="integer", description="Hotel code"),
      *                 @OA\Property(property="roomCode", type="integer", description="Room code"),
      *                 @OA\Property(property="dailyValue", type="number", format="float", description="Daily value of the room"),
      *                 @OA\Property(property="guestCode", type="integer", description="Guest code"),
@@ -111,7 +109,6 @@ class ReserveController extends Controller
         $request->validate([
             'CheckIn' => 'required|date',
             'CheckOut' => 'required|date',
-            'hotelCode' => 'required|integer',
             'roomCode' => 'required|integer',
             'dailyValue' => 'required|numeric',
             'guestName' => 'required|string',
@@ -128,18 +125,12 @@ class ReserveController extends Controller
                 'message' => 'Room not found'
             ], 404);
         }
-        $hotel = Hotel::find($room->hotelCode);
-        if (!$hotel) {
+
+        if ($request->CheckIn >= $request->CheckOut) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Hotel not found'
-            ], 404);
-        }
-        if ($room->hotelCode != $request->hotelCode) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Room not found in the hotel'
-            ], 404);
+                'message' => 'The check-out date must be greater than the check-in date'
+            ], 422);
         }
 
         if (!$room->isAvailable(Carbon::parse($request->CheckIn)) || !$room->isAvailable(Carbon::parse($request->CheckOut))) {
@@ -148,7 +139,7 @@ class ReserveController extends Controller
                 'message' => 'Room not available for the selected date'
             ], 422);
         }
-        
+
         $guest = new Guest();
         if (!DB::table('guests')->where('Phone', $request['guestPhone'])->exists()) {
             $guest->Name = $request['guestName'];
@@ -161,12 +152,6 @@ class ReserveController extends Controller
         $checkIn = Carbon::parse($request->CheckIn);
         $checkOut = Carbon::parse($request->CheckOut);
         $days = $checkIn->diffInDays($checkOut);
-        if ($days < 1) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'The check-out date must be greater than the check-in date'
-            ], 422);
-        }
 
         $valueTotal = $request->dailyValue * $days;
 
@@ -212,12 +197,16 @@ class ReserveController extends Controller
             $reserve->save();
         }
 
+        $dailyData = [];
         for ($i = 0; $i < $days; $i++) {
-            $daily = new Daily();
-            $daily->Date = $checkIn->addDays($i);
-            $daily->Value = $request->dailyValue;
-            $daily->reserveCode = $reserve->id;
-            $daily->save();
+            $dailyData[$i] = [
+                'Date' => $checkIn->addDays($i),
+                'Value' => $request->dailyValue,
+                'reserveCode' => $reserve->id
+            ];
+        }
+        if (count($dailyData) > 0) {
+            Daily::insert($dailyData);
         }
 
         if ($request->has('paymentMethod')) {
@@ -227,6 +216,7 @@ class ReserveController extends Controller
             $payment->reserveCode = $reserve->id;
             $payment->save();
         }
+        
         return response()->json([
             'status' => 'success',
             'message' => 'Reserve created successfully',

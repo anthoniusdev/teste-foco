@@ -166,7 +166,6 @@ Todos os valores inseridos no corpo das requisições abaixos são apenas para f
 {
     "CheckIn": "2024-11-04",
     "CheckOut": "2024-11-04",
-    "hotelCode": 12,
     "roomCode": 101,
     "dailyValue": 150.00,
     "guestName": "Anthonius",
