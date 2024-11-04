@@ -72,7 +72,7 @@ class recover_data_xml extends Command
             foreach ($reserve->Guests->Guest as $guest) {
                 $guest_instance = new Guest();
                 $guest_instance->Name = $guest->Name;
-                $guest_instance->Lastname = $guest->Lastname;
+                $guest_instance->LastName = $guest->LastName;
                 $guest_instance->Phone = $guest->Phone;
                 $guest_instance->save();
                 $reserve_instance->guestCode = $guest_instance->id;

@@ -1,0 +1,923 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API FocoMultimida",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api"
+        }
+    ],
+    "paths": {
+        "/reserve": {
+            "post": {
+                "tags": [
+                    "Reserve"
+                ],
+                "summary": "Create a new reservation",
+                "description": "This endpoint allows the creation of a new reservation.",
+                "operationId": "createReservation",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "CheckIn",
+                                    "CheckOut",
+                                    "hotelCode",
+                                    "roomCode",
+                                    "dailyValue",
+                                    "guestName",
+                                    "guestLastName",
+                                    "guestPhone"
+                                ],
+                                "properties": {
+                                    "CheckIn": {
+                                        "description": "Check-in date",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "CheckOut": {
+                                        "description": "Check-out date",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "hotelCode": {
+                                        "description": "Hotel code",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "roomCode": {
+                                        "description": "Room code",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "dailyValue": {
+                                        "description": "Daily value of the room",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100
+                                    },
+                                    "guestName": {
+                                        "description": "Guest name",
+                                        "type": "string",
+                                        "example": "Anthonius"
+                                    },
+                                    "guestLastName": {
+                                        "description": "Guest last name",
+                                        "type": "string",
+                                        "example": "Souza"
+                                    },
+                                    "guestPhone": {
+                                        "description": "Guest phone number",
+                                        "type": "string",
+                                        "example": "557799925474"
+                                    },
+                                    "paymentMethod": {
+                                        "description": "Payment method",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "paymentValue": {
+                                        "description": "Payment value",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Reservation created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Status message",
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "description": "Success message",
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "description": "Reservation data",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "Reservation ID",
+                                                    "type": "integer"
+                                                },
+                                                "CheckIn": {
+                                                    "description": "Check-in date",
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "CheckOut": {
+                                                    "description": "Check-out date",
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "hotelCode": {
+                                                    "description": "Hotel code",
+                                                    "type": "integer"
+                                                },
+                                                "roomCode": {
+                                                    "description": "Room code",
+                                                    "type": "integer"
+                                                },
+                                                "dailyValue": {
+                                                    "description": "Daily value of the room",
+                                                    "type": "number",
+                                                    "format": "float"
+                                                },
+                                                "guestCode": {
+                                                    "description": "Guest code",
+                                                    "type": "integer"
+                                                },
+                                                "Total": {
+                                                    "description": "Total value of the reservation",
+                                                    "type": "number",
+                                                    "format": "float"
+                                                },
+                                                "isPayed": {
+                                                    "description": "Payment status",
+                                                    "type": "boolean"
+                                                },
+                                                "created_at": {
+                                                    "description": "Creation date",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Update date",
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Status message",
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "description": "Error message",
+                                            "type": "string",
+                                            "example": "Room not available for the selected date or The check-out date must be greater than the check-in date"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/room": {
+            "get": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Get list of rooms",
+                "description": "Returns list of rooms",
+                "operationId": "getRoomsList",
+                "responses": {
+                    "200": {
+                        "description": "Rooms retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rooms retrieved successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "Name": {
+                                                        "type": "string",
+                                                        "example": "Room 1"
+                                                    },
+                                                    "hotelCode": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2023-01-01T00:00:00Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2023-01-01T00:00:00Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No rooms found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No rooms found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Create a new room",
+                "description": "Creates a new room with the provided name and hotel code",
+                "operationId": "storeRoom",
+                "requestBody": {
+                    "description": "Pass room data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "Name",
+                                    "hotelCode"
+                                ],
+                                "properties": {
+                                    "Name": {
+                                        "type": "string",
+                                        "example": "Room 1"
+                                    },
+                                    "hotelCode": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Room created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room created successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "Name": {
+                                                    "type": "string",
+                                                    "example": "Room 1"
+                                                },
+                                                "hotelCode": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "Name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The Name field is required."
+                                                    }
+                                                },
+                                                "hotelCode": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The hotelCode field is required."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/room/{id}": {
+            "get": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Get room information",
+                "description": "Returns room data",
+                "operationId": "getRoomById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "Name": {
+                                                    "type": "string",
+                                                    "example": "Room 1"
+                                                },
+                                                "hotelCode": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Update existing room",
+                "description": "Updates an existing room with the provided name and hotel code",
+                "operationId": "updateRoom",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Pass room data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "Name",
+                                    "hotelCode"
+                                ],
+                                "properties": {
+                                    "Name": {
+                                        "type": "string",
+                                        "example": "Room 1"
+                                    },
+                                    "hotelCode": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Room updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "Name": {
+                                                    "type": "string",
+                                                    "example": "Room 1"
+                                                },
+                                                "hotelCode": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Delete existing room",
+                "description": "Deletes an existing room",
+                "operationId": "deleteRoom",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room deleted successfully"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Update existing room partially",
+                "description": "Partially updates an existing room with the provided name and hotel code",
+                "operationId": "updatePartialRoom",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Pass room data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "Name": {
+                                        "type": "string",
+                                        "example": "Room 1"
+                                    },
+                                    "hotelCode": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Room updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "Name": {
+                                                    "type": "string",
+                                                    "example": "Room 1"
+                                                },
+                                                "hotelCode": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2023-01-01T00:00:00Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No data to update",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Coupon": {
+                "title": "Coupon",
+                "description": "Coupon model",
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the coupon",
+                        "type": "integer"
+                    },
+                    "Code": {
+                        "description": "The code of the coupon",
+                        "type": "string"
+                    },
+                    "Discount": {
+                        "description": "The percentage of discount",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "Validity": {
+                        "description": "The validity of the coupon",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "Active": {
+                        "description": "If the coupon is active",
+                        "type": "boolean"
+                    },
+                    "Limit": {
+                        "description": "The limit of discount",
+                        "type": "integer"
+                    },
+                    "Used": {
+                        "description": "The number of times the coupon was used",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Daily": {
+                "title": "Daily",
+                "description": "Daily model",
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the daily",
+                        "type": "integer"
+                    },
+                    "Date": {
+                        "description": "The date of the daily",
+                        "type": "string"
+                    },
+                    "Value": {
+                        "description": "The value of the daily",
+                        "type": "integer"
+                    },
+                    "reserveCode": {
+                        "description": "The reserve code of the daily. A foreign key to the reserves table",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Guest": {
+                "title": "Guest",
+                "description": "Guest model",
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the guest",
+                        "type": "integer"
+                    },
+                    "Name": {
+                        "description": "The name of the guest",
+                        "type": "string"
+                    },
+                    "Lastname": {
+                        "description": "The last name of the guest",
+                        "type": "string"
+                    },
+                    "Phone": {
+                        "description": "The phone of the guest",
+                        "type": "string"
+                    },
+                    "isUsedCouponFirstReserve": {
+                        "description": "If used the first reserve coupon",
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "Hotel": {
+                "title": "Hotel",
+                "description": "Hotel model",
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the hotel",
+                        "type": "integer"
+                    },
+                    "Name": {
+                        "description": "The name of the hotel",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Payment": {
+                "title": "Payment",
+                "description": "Payment model",
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the payment",
+                        "type": "integer"
+                    },
+                    "Method": {
+                        "description": "The method of the payment",
+                        "type": "string"
+                    },
+                    "Value": {
+                        "description": "The value of the payment",
+                        "type": "integer"
+                    },
+                    "reserveCode": {
+                        "description": "The reserve code of the payment. A foreign key to the reserves table",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Reserve": {
+                "title": "Reserve",
+                "description": "Reserve model",
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the reserve",
+                        "type": "integer"
+                    },
+                    "CheckIn": {
+                        "description": "The check in date of the reserve",
+                        "type": "string"
+                    },
+                    "CheckOut": {
+                        "description": "The check out date of the reserve",
+                        "type": "string"
+                    },
+                    "hotelCode": {
+                        "description": "The hotel code of the reserve. A foreign key to the hotels table",
+                        "type": "string"
+                    },
+                    "roomCode": {
+                        "description": "The room code of the reserve. A foreign key to the rooms table",
+                        "type": "string"
+                    },
+                    "guestCode": {
+                        "description": "The guest code of the reserve. A foreign key to the guests table",
+                        "type": "string"
+                    },
+                    "isPayed": {
+                        "description": "The payed status of the reserve",
+                        "type": "boolean"
+                    },
+                    "Total": {
+                        "description": "The total value of the reserve",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Room": {
+                "title": "Room",
+                "description": "Room model",
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the room",
+                        "type": "integer"
+                    },
+                    "Name": {
+                        "description": "The name of the room",
+                        "type": "string"
+                    },
+                    "hotelCode": {
+                        "description": "The hotel code of the room. A foreign key to the hotels table",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Reserve",
+            "description": "Reserve"
+        },
+        {
+            "name": "Room",
+            "description": "Room"
+        }
+    ]
+}
