@@ -7,6 +7,7 @@ until mysqladmin ping -h db --silent; do
 done
 
 # Comandos adicionais do laravel
+php artisan key:generate
 php artisan migrate 
 php artisan app:recover_data_xml
 php artisan app:insert_coupon

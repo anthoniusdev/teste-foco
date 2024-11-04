@@ -33,6 +33,10 @@ A API foi projetada para gerenciar acomodações, permitir a reserva de quartos,
 - **Composer**
 - **Swagger/OpenAPI 3.0**
 
+## Diagrama entidade relacionamento
+![Diagrama entidade relacionamento](der.png)
+
+
 ## Como Configurar o Projeto
 
 1. **Clone o repositório**:
@@ -53,8 +57,9 @@ Certifique-se de ter o Docker e o Docker Compose instalados na sua máquina. Cas
     - https://docs.docker.com/desktop/install/mac-install/
 
 3. **Instale as dependências**:
-   ```bash
-   composer install
+    ```bash
+    cd api
+    composer install
 
 4. **Configure as variáveis de ambiente**:
     - Copie o arquivo ```.env.example``` para ```.env```. Em seguida abra o arquivo `.env` em um editor de texto de sua preferência e substitua as variáveis existentes pelos valores abaixo:
@@ -68,7 +73,7 @@ Certifique-se de ter o Docker e o Docker Compose instalados na sua máquina. Cas
     ```
     - Certifique-se de que as credenciais e nome do banco de dados estejam exatamente como acima.
     - Obs.: Caso queira modificar o valor de alguma variável acima, será necessário abrir o arquivo `docker-compose.yml` e modificar os valores lá também. Porém, para o funcionamento perfeito da API, não recomendo.
-
+  
 
 5. **Inicie o Projeto com Docker**:
     Para iniciar o projeto, execute o seguinte comando:

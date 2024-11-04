@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Coupon;
 use App\Models\Daily;
 use App\Models\Guest;
+use App\Models\Hotel;
 use App\Models\Payment;
 use App\Models\Reserve;
 use App\Models\Room;
@@ -29,8 +30,8 @@ class ReserveController extends Controller
      *         @OA\JsonContent(
      *             required={"CheckIn", "CheckOut", "hotelCode", "roomCode", "dailyValue", "guestName", "guestLastName", "guestPhone"},
      *             type="object",
-     *             @OA\Property(property="CheckIn", type="string", format="date", description="Check-in date"),
-     *             @OA\Property(property="CheckOut", type="string", format="date", description="Check-out date"),
+     *             @OA\Property(property="CheckIn", type="string", format="date", description="Check-in date", example="2021-11-03"),
+     *             @OA\Property(property="CheckOut", type="string", format="date", description="Check-out date", example="2021-11-05"),
      *             @OA\Property(property="hotelCode", type="integer", description="Hotel code", example=1),
      *             @OA\Property(property="roomCode", type="integer", description="Room code", example=1),
      *             @OA\Property(property="dailyValue", type="number", format="float", description="Daily value of the room", example=100.00),
@@ -120,7 +121,27 @@ class ReserveController extends Controller
             'paymentValue' => 'numeric'
         ]);
 
-        $room = Room::findOrFail($request->roomCode);
+        $room = Room::find($request->roomCode);
+        if (!$room) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not found'
+            ], 404);
+        }
+        $hotel = Hotel::find($room->hotelCode);
+        if (!$hotel) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Hotel not found'
+            ], 404);
+        }
+        if ($room->hotelCode != $request->hotelCode) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not found in the hotel'
+            ], 404);
+        }
+
         if (!$room->isAvailable(Carbon::parse($request->CheckIn)) || !$room->isAvailable(Carbon::parse($request->CheckOut))) {
             return response()->json([
                 'status' => 'error',

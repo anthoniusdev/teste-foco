@@ -26,13 +26,16 @@ class insert_coupon extends Command
      */
     public function handle()
     {
-        $coupon = new Coupon();
-        $coupon->code = 'F1RSTR10';
-        $coupon->discount = 10;
-        $coupon->active = true;
-        $coupon->limit = 100;
-        $coupon->used = 0;
-        $coupon->validity = '2025-11-03';
-        $coupon->save();
+        $coupon = Coupon::where('code', 'F1RSTR10')->first();
+        if (!$coupon) {
+            $coupon = new Coupon();
+            $coupon->code = 'F1RSTR10';
+            $coupon->discount = 10;
+            $coupon->active = true;
+            $coupon->limit = 100;
+            $coupon->used = 0;
+            $coupon->validity = '2025-11-03';
+            $coupon->save();
+        }
     }
 }

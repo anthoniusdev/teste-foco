@@ -37,12 +37,14 @@
                                     "CheckIn": {
                                         "description": "Check-in date",
                                         "type": "string",
-                                        "format": "date"
+                                        "format": "date",
+                                        "example": "2021-11-03"
                                     },
                                     "CheckOut": {
                                         "description": "Check-out date",
                                         "type": "string",
-                                        "format": "date"
+                                        "format": "date",
+                                        "example": "2021-11-05"
                                     },
                                     "hotelCode": {
                                         "description": "Hotel code",
@@ -576,6 +578,26 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Object not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -615,6 +637,26 @@
                                         "data": {
                                             "type": "object",
                                             "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room not found"
                                         }
                                     },
                                     "type": "object"
@@ -716,6 +758,26 @@
                         "content": {
                             "application/json": {
                                 "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Object not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
                             }
                         }
                     }

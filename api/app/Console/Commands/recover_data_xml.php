@@ -24,13 +24,22 @@ class recover_data_xml extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Restores data from an XML file and updates the database accordingly';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
+        /**
+         * This code snippet checks if there is data in the database, if there is, it does not execute the code.
+         * This is to prevent the data from being duplicated.
+         * If you want to run the code anyway, comment out the if statement. 
+         */
+        if (Hotel::count() > 0) {
+            return;
+        }
+
         /**
          * First, this code snippet sets the path to the xml files.
          */

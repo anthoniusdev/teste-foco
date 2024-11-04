@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hotel;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
@@ -44,7 +45,7 @@ class RoomController extends Controller
      *      )
      *  )
      */
-    
+
     public function index()
     {
         $rooms = Room::all();
@@ -115,18 +116,25 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'Name' => 'required|string',
-            'hotelCode' => 'required|integer',
-        ],
-        [
-            'Name.required' => 'The Name field is required.',
-            'Name.string' => 'The Name field must be a string.',
-            'hotelCode.required' => 'The hotelCode field is required.',
-            'hotelCode.integer' => 'The hotelCode field must be an integer.'
-        ]
-    );
-
+        $request->validate(
+            [
+                'Name' => 'required|string',
+                'hotelCode' => 'required|integer',
+            ],
+            [
+                'Name.required' => 'The Name field is required.',
+                'Name.string' => 'The Name field must be a string.',
+                'hotelCode.required' => 'The hotelCode field is required.',
+                'hotelCode.integer' => 'The hotelCode field must be an integer.'
+            ]
+        );
+        $hotel = Hotel::find($request->hotelCode);
+        if (!$hotel) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Hotel not found'
+            ], 404);
+        }
         $room = Room::create($request->all());
 
         return response()->json([
@@ -182,18 +190,24 @@ class RoomController extends Controller
      */
     public function show(int $id)
     {
-        $room = Room::findOrFail($id);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Room retrieved successfully',
-            'data' => $room
-        ], 200);
+        try {
+            $room = Room::findOrFail($id);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Room retrieved successfully',
+                'data' => $room
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not found'
+            ], 404);
+        }
     }
 
     /**
      * Update the specified resource in storage.
-    */
+     */
     /**
      * @OA\Put(
      *      path="/room/{id}",
@@ -233,6 +247,14 @@ class RoomController extends Controller
      *                  @OA\Property(property="updated_at", type="string", format="date-time", example="2023-01-01T00:00:00Z")
      *              )
      *          )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Object not found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", example="error"),
+     *              @OA\Property(property="message", type="string", example="Room not found"),
+     *          )
      *      )
      * )
      */
@@ -243,7 +265,21 @@ class RoomController extends Controller
             'hotelCode' => 'required|integer',
         ]);
 
-        $room = Room::findOrFail($id);
+        $hotel = Hotel::find($request->hotelCode);
+        if (!$hotel) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Hotel not found'
+            ], 404);
+        }
+
+        $room = Room::find($id);
+        if (!$room) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not found'
+            ], 404);
+        }
 
         $room->update($request->all());
 
@@ -256,7 +292,7 @@ class RoomController extends Controller
 
     /**
      * Update the specified resource in storage partially.
-    */
+     */
     /**
      * @OA\Patch(
      *      path="/room/{id}",
@@ -300,32 +336,54 @@ class RoomController extends Controller
      *          response=400,
      *          description="No data to update",
      *          @OA\JsonContent()
-     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Object not found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", example="error"),
+     *              @OA\Property(property="message", type="string", example="Room not found"),
+     *          )
+     *     )
      * )
      */
     public function updatePartial(Request $request, int $id)
     {
-        $room = Room::findOrFail($id);
+        $room = Room::find($id);
+        if (!$room) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not found'
+            ], 404);
+        }
 
         if ($request->has('Name') || $request->has('hotelCode')) {
             $request->validate([
                 'Name' => 'string',
                 'hotelCode' => 'integer',
             ]);
-            $room->update($request->all());            
+            if ($request->has('hotelCode')) {
+                $hotel = Hotel::find($request->hotelCode);
+                if (!$hotel) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Hotel not found'
+                    ], 404);
+                }
+            }
+            $room->update($request->all());
             return response()->json([
                 'status' => 'success',
                 'message' => 'Room updated successfully',
                 'data' => $room
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'status' => 'error',
                 'message' => 'No data to update',
                 'data' => null
             ], 400);
         }
-
     }
 
     /**
@@ -355,12 +413,27 @@ class RoomController extends Controller
      *              @OA\Property(property="message", type="string", example="Room deleted successfully"),
      *              @OA\Property(property="data", type="object", example=null)
      *          )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Room not found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", example="error"),
+     *              @OA\Property(property="message", type="string", example="Room not found"),
+     *          )
      *      )
      * )
      */
     public function destroy(int $id)
     {
-        Room::findOrFail($id)->delete();
+        $room = Room::find($id);
+        if (!$room) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Room not found'
+            ], 404);
+        }
+        $room->delete();
         return response()->json([
             'status' => 'success',
             'message' => 'Room deleted successfully',
