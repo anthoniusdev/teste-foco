@@ -33,8 +33,11 @@ A API foi projetada para gerenciar acomodações, permitir a reserva de quartos,
 - **Composer**
 - **Swagger/OpenAPI 3.0**
 
+## Modelo Entidade Relacionamento
+![Modelo Entidade Relacionamento](modelo_entidade_relacionamento.png)
+
 ## Diagrama entidade relacionamento
-![Diagrama entidade relacionamento](der.png)
+![Diagrama entidade relacionamento](diagrama_entidade_relacionamento.png)
 
 
 ## Como Configurar o Projeto
@@ -94,7 +97,7 @@ Certifique-se de ter o Docker e o Docker Compose instalados na sua máquina. Cas
    ```http://127.0.0.1:8000```
 
 7. **Acesse a documentação da API**:
-   A documentação da API pode ser acessada em ```http://localhost:8000/api/documentation``` após a inicialização do projeto. OpenAPI 3.0 foi utilizado para fornecer uma visão abrangente dos endpoints disponíveis.
+   A documentação da API pode ser acessada em ```http://127.0.0.1:8000/api/documentation``` após a inicialização do projeto. OpenAPI 3.0 foi utilizado para fornecer uma visão abrangente dos endpoints disponíveis.
 
 ## Exemplo de cabeçalho de requisições
 Para todas as requisições da API, é imprescindível incluir o cabeçalho `Accept` com o valor `application/json`. Isso garante que a API responda no formato JSON, que é o esperado para o correto funcionamento do CRUD de Quartos e POST de reservas.
