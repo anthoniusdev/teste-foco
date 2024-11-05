@@ -27,8 +27,8 @@ A API foi projetada para gerenciar acomodações, permitir a reserva de quartos,
 
 ## Tecnologias Utilizadas
 
-- **PHP** (Laravel)
-- **MySQL**
+- **PHP**: version 8.1.27 (Laravel: version 10.48.22)
+- **MySQL**: version 8.0
 - **Docker**
 - **Composer**
 - **Swagger/OpenAPI 3.0**
@@ -190,8 +190,6 @@ Neste repositório, você encontrará:
 
 - O código fonte completo da API RESTful.
 - Um histórico de alterações detalhado.
-- Instruções para contribuir com o projeto, caso deseje.
-- Problemas conhecidos e melhorias planejadas.
   
 ## Agradecimentos
 Gostaria de expressar minha sincera gratidão à empresa Foco pela oportunidade de participar deste teste técnico e pela confiança depositada em meu trabalho. Foi muito bacana desenvolver uma API em laravel sabendo que esta serviria para uma avaliação de vaga de emprego. Embora já tivesse trabalhado com laravel para construir uma API em outra oportunidade, desta vez foi bem diferente, o cuidado com a documentação, com o versionamento do código, isso me mostrou ser algo com que eu quero trabalhar.
